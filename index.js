@@ -29,7 +29,15 @@ restService.post("/assistant", function(req, res) {
 
         search.then(function (data) {
 
-            var speech = getItemInfo(data) ? getItemInfo(data) : "Seems like some problem. Speak again.";      
+            var product = getItemInfo(data);
+
+            if (product) {
+              var productInfo = "Item " + product.name + " sold for $" + product.regularPrice + " by " + product.manufacturer;
+            } else {
+              var productInfo = "No Product Informartion found for this item"
+            }
+
+            var speech = productInfo ? productInfo : "Seems like some problem. Speak again.";      
             sendResultsToFlow(res, speech);
         
           });
@@ -37,7 +45,7 @@ restService.post("/assistant", function(req, res) {
       break;
 
 
-    //case availability
+    //case real time availability
     case "item.details.availability" :
 
       var sku = req.body.result.parameters.sku;
@@ -47,12 +55,10 @@ restService.post("/assistant", function(req, res) {
 
         if (err) console.error(err);
         
-
          if(data.stores.length > 0) {
 
            var storeList = data.stores.map(s => `${s.name}`).join(',');
-           console.log(storeList);
-
+           
             var speech = "Yes, this Item is avilable in " + data.stores.length + " stores in this area";
          } else {
            var speech = "Sorry, this item is not available at this location"
@@ -63,6 +69,33 @@ restService.post("/assistant", function(req, res) {
       });
 
       break;
+
+      //case checking if product on sale and what is the sale price
+      case "item.details.onsalecheck" :
+
+       var sku = req.body.result.parameters.sku;
+
+       var search = bby.products('sku=' + req.body.result.parameters.sku);
+
+          search.then(function (data) {
+
+            var product = getItemInfo(data);
+
+            if (product) {
+
+                if (product.onSale) {
+                  var productInfo = "Item " + product.name + " is on Sale with Sale Price of $" + product.salePrice;
+                } else {
+                  var productInfo = "Item " + product.name + " is not on Sale and sold for $" + product.regularPrice;
+                }
+           }
+
+            var speech = productInfo ? productInfo : "Seems like some problem. Speak again.";      
+            sendResultsToFlow(res, speech);
+        
+          });
+
+        break;
 
    }
 
@@ -82,17 +115,18 @@ restService.post("/assistant", function(req, res) {
 
    }
 
+
+
   //get item informartion from best buy
   function getItemInfo (data) {
 
     if (!data.total) {
-      return 'No product information found found for this item';
+      return null;
     } else {
-      var product = data.products[0];
-      var productInfo = "Item " + product.name + " sold for $" + product.salePrice + " by " + product.manufacturer;
-      
-      return productInfo;    
+      var product = data.products[0];      
     }
+      
+      return product;        
   }
 
 
