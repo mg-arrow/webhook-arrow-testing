@@ -84,9 +84,9 @@ restService.post("/assistant", function(req, res) {
             if (product) {
 
                 if (product.onSale) {
-                  var productInfo = "Item " + product.name + " is on Sale with Sale Price of $" + product.salePrice;
+                  var productInfo = "Item is on Sale with Sale Price of $" + product.salePrice;
                 } else {
-                  var productInfo = "Item " + product.name + " is not on Sale and sold for $" + product.regularPrice;
+                  var productInfo = "Item is not on Sale and sold for regular price $" + product.regularPrice;
                 }
            }
 
