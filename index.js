@@ -151,7 +151,7 @@ restService.post("/assistant", function(req, res) {
           displayText: results,
           source: "webhook-arrow-testing",
           data: {
-            google: richData
+            richData: richData
           }
         });
 
