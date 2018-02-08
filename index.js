@@ -44,6 +44,35 @@ restService.post("/assistant", function(req, res) {
 
       break;
 
+    //rich item details
+    case "item.details.rich" :
+
+       var search = bby.products('sku=' + req.body.result.parameters.sku);
+
+        search.then(function (data) {
+
+            var product = getItemInfo(data);
+
+            if (product) {
+              var productInfo = "Item " + product.name + " sold for $" + product.regularPrice + " by " + product.manufacturer;
+            } else {
+              var productInfo = "No Product Informartion found for this item"
+            }
+
+            var richData = {
+                img: product.thumbnailImage,
+                title: product.name,
+                text: product.shortDescription,
+                button: 'View'
+            };
+
+            var speech = productInfo ? productInfo : "Seems like some problem. Speak again.";      
+            sendRichResultsToFlow(res, speech, richData);
+        
+          });
+
+      break;
+
 
     //case real time availability
     case "item.details.availability" :
@@ -113,7 +142,23 @@ restService.post("/assistant", function(req, res) {
           source: "webhook-arrow-testing"
         });
 
+   }//post results back to Flow
+   function sendRichResultsToFlow(res, results,richData) {
+
+     // return to caller
+        return res.json({
+          speech: results,
+          displayText: results,
+          source: "webhook-arrow-testing",
+          data: {
+            google: richData
+          }
+        });
+
    }
+
+
+
 
 
 
