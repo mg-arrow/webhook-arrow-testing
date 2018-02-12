@@ -126,6 +126,22 @@ restService.post("/assistant", function(req, res) {
 
         break;
 
+        //recommendations
+        case "recommendations" :
+
+        var recommendations = bby.recommendations('mostViewed');
+
+        recommendations.then(function(data){
+
+          var speech = 'Recommendations';
+
+          if (data) {
+            sendRichResultsToFlow(res, speech, data.results);
+          }
+
+        });
+
+          break; 
    }
 
  
