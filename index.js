@@ -63,6 +63,7 @@ restService.post("/assistant", function(req, res) {
 
             if (product) {
               var productInfo = "Item " + product.name + " sold for $" + product.regularPrice + " by " + product.manufacturer;
+              contextOut[0].parameters['sku'] = product.sku;
               contextOut[0].parameters['manufacturer'] = product.manufacturer;
               contextOut[0].parameters['category'] = product.categoryPath[product.categoryPath.length-1].id;
             } else {
