@@ -139,11 +139,21 @@ restService.post("/assistant", function(req, res) {
         //recommendations
         case "recommendations" :
 
-        var recommendations = bby.recommendations('mostViewed');
+        var contexts = req.body.result.contexts;
+
+         let selectedProductInfo = contexts.find(o => o.name === 'selected-product-info');
+         
+        if (selectedProductInfo && selectedProductInfo != undefined) {
+          //let selectedCategory = selectedProductInfo.parameters.category;           
+          let selectedSku = selectedProductInfo.parameters.sku;
+          var recommendations = bby.recommendations('alsoViewed', selectedSku);
+        } else {
+          var recommendations = bby.recommendations('mostViewed');
+        }
 
         recommendations.then(function(data){
 
-          var speech = 'Recommendations';
+          var speech = 'Product Recommendations';
 
           if (data) {
             sendRichResultsToFlow(res, speech, data.results);
