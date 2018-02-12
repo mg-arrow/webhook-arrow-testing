@@ -71,6 +71,7 @@ restService.post("/assistant", function(req, res) {
             }
 
             var richData = {
+                display: 'card',
                 img: product.thumbnailImage,
                 title: product.name,
                 text: product.shortDescription,
@@ -157,7 +158,11 @@ restService.post("/assistant", function(req, res) {
           var speech = 'Product Recommendations';
 
           if (data) {
-            sendRichResultsToFlow(res, speech, data.results);
+
+            let finalData = data;
+            finalData.display = 'carousel';
+
+           sendRichResultsToFlow(res, speech, finalData);
           }
 
         });
