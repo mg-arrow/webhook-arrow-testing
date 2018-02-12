@@ -53,8 +53,18 @@ restService.post("/assistant", function(req, res) {
 
             var product = getItemInfo(data);
 
+            var contextOut = [
+                { 
+                "name":"selected-product-info", 
+                "lifespan":5, 
+                "parameters":{}
+                }
+              ];
+
             if (product) {
               var productInfo = "Item " + product.name + " sold for $" + product.regularPrice + " by " + product.manufacturer;
+              contextOut[0].parameters['manufacturer'] = product.manufacturer;
+              contextOut[0].parameters['category'] = product.categoryPath[product.categoryPath.length-1].id;
             } else {
               var productInfo = "No Product Informartion found for this item"
             }
@@ -67,7 +77,7 @@ restService.post("/assistant", function(req, res) {
             };
 
             var speech = productInfo ? productInfo : "Seems like some problem. Speak again.";      
-            sendRichResultsToFlow(res, speech, richData);
+            sendRichResultsToFlow(res, speech, richData, contextOut);
         
           });
 
@@ -149,7 +159,7 @@ restService.post("/assistant", function(req, res) {
 
  
    //post results back to Flow
-   function sendResultsToFlow(res, results) {
+   function sendResultsToFlow(res, results, contextOut) {
 
      // return to caller
         return res.json({
@@ -158,25 +168,21 @@ restService.post("/assistant", function(req, res) {
           source: "webhook-arrow-testing"
         });
 
-   }//post results back to Flow
-   function sendRichResultsToFlow(res, results,richData) {
+   }
+   
+   //post rich results back to Flow
+   function sendRichResultsToFlow(res, results,richData,contextOut) {
 
-     // return to caller
-        return res.json({
+     return res.json ({
           speech: results,
           displayText: results,
           source: "webhook-arrow-testing",
           data: {
             richData: richData
-          }
-        });
-
-   }
-
-
-
-
-
+          },
+          contextOut: contextOut
+        })
+     }
 
   //get item informartion from best buy
   function getItemInfo (data) {
