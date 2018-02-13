@@ -40,6 +40,8 @@ restService.post("/assistant", function(req, res) {
             var speech = productInfo ? productInfo : "Seems like some problem. Speak again.";      
             sendResultsToFlow(res, speech);
         
+          }).catch(function(err){
+            console.warn(err);
           });
 
       break;
@@ -81,6 +83,8 @@ restService.post("/assistant", function(req, res) {
             var speech = productInfo ? productInfo : "Seems like some problem. Speak again.";      
             sendRichResultsToFlow(res, speech, richData, contextOut);
         
+          }).catch(function(err){
+            console.warn(err);
           });
 
       break;
@@ -107,6 +111,8 @@ restService.post("/assistant", function(req, res) {
 
           sendResultsToFlow(res, speech);
              
+      }).catch(function(err){
+            console.warn(err);
       });
 
       break;
@@ -134,9 +140,30 @@ restService.post("/assistant", function(req, res) {
             var speech = productInfo ? productInfo : "Seems like some problem. Speak again.";      
             sendResultsToFlow(res, speech);
         
+          }).catch(function(err){
+            console.warn(err);
           });
 
         break;
+
+      //case checking if product has any warranty
+      case "item.details.warrantycheck" :
+
+       var sku = req.body.result.parameters.sku;
+
+       bby.warranties(sku, function(err, data){
+          if (err) 
+            sendResultsToFlow(res, 'No warranty information found for this item');
+          else {
+
+            let warrantyText =  'The following warranties are available for this item: ' + getWarrantyText(data).join(',').trim(',');
+            
+            sendResultsToFlow(res, warrantyText);
+          }
+       });
+
+        break;
+
 
         //recommendations
         case "recommendations" :
@@ -165,7 +192,9 @@ restService.post("/assistant", function(req, res) {
            sendRichResultsToFlow(res, speech, finalData);
           }
 
-        });
+        }).catch(function(err){
+            console.warn(err);
+          });
 
           break; 
    }
@@ -211,6 +240,16 @@ restService.post("/assistant", function(req, res) {
       
       return product;        
   }
+
+  //get warranty text
+  function getWarrantyText(data) {
+    return data.map(getWarrantyDetails);    
+  }
+
+  function getWarrantyDetails(item, index) {
+    var warrantyText = [item.shortName,item.currentPrice].join(" for $");
+    return warrantyText;
+}
 
 
 restService.listen(process.env.PORT || 8000, function() {
