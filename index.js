@@ -156,7 +156,7 @@ restService.post("/assistant", function(req, res) {
             sendResultsToFlow(res, 'No warranty information found for this item');
           else {
 
-            let warrantyText =  'The following warranties are available for this item: ' + getWarrantyText(data).join(',').trim(',');
+            let warrantyText =  'The following warranties are available for this item: ' + getWarrantyText(data).join(',');
             
             sendResultsToFlow(res, warrantyText);
           }
