@@ -99,12 +99,13 @@ restService.post("/assistant", function(req, res) {
       bby.realTimeAvailability(sku, {postalCode: zipcode}, function (err, data) {
 
         if (err) console.error(err);
+
+        console.log(data.stores);
         
          if(data.stores.length > 0) {
-
-           var storeList = data.stores.map(s => `${s.name}`).join(',');
-           
-            var speech = "Yes, this Item is avilable in " + data.stores.length + " stores in this area";
+                                
+            var speech = "Yes, this Item is avilable in " + data.stores.length + " stores in this area.";
+            speech = speech + " You can try going to " + data.stores[0].name + " store at "  + data.stores[0].address + " in " +  data.stores[0].city;
          } else {
            var speech = "Sorry, this item is not available at this location"
          }
@@ -249,7 +250,7 @@ restService.post("/assistant", function(req, res) {
   function getWarrantyDetails(item, index) {
     var warrantyText = [item.shortName,item.currentPrice].join(" for $");
     return warrantyText;
-}
+  }
 
 
 restService.listen(process.env.PORT || 8000, function() {
