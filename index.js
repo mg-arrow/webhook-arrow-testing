@@ -53,6 +53,8 @@ restService.post("/assistant", function(req, res) {
 
         search.then(function (data) {
 
+            console.log(data);
+
             var product = getItemInfo(data);
 
             var contextOut = [
@@ -74,7 +76,7 @@ restService.post("/assistant", function(req, res) {
 
             var richData = {
                 display: 'card',
-                img: product.thumbnailImage,
+                img: product.mediumImage,
                 title: product.name,
                 text: product.shortDescription,
                 button: 'View'
